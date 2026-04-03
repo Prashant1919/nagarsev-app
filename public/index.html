@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nagarsevak Dashboard · PMC Pune</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: { 950: '#0a0f1e', 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
+            teal:  { 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488' },
+            amber: { 400: '#fbbf24', 500: '#f59e0b' },
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          backdropBlur: { xs: '2px' },
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background: #0a0f1e; color: #e2e8f0; }
+
+    /* ─── Glassmorphism card ─── */
+    .glass {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-light {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Gradient accents ─── */
+    .grad-teal { background: linear-gradient(135deg, #14b8a6, #0891b2); }
+    .grad-amber { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+    .grad-purple { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+    .text-grad-teal {
+      background: linear-gradient(135deg, #2dd4bf, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ─── Sidebar ─── */
+    .sidebar-link {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 16px; border-radius: 10px;
+      font-size: 14px; font-weight: 500; color: #94a3b8;
+      transition: all .2s; cursor: pointer;
+    }
+    .sidebar-link:hover { background: rgba(45,212,191,.08); color: #2dd4bf; }
+    .sidebar-link.active { background: rgba(45,212,191,.12); color: #2dd4bf; border-left: 2px solid #14b8a6; }
+    .sidebar-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* ─── Form inputs ─── */
+    .form-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14px; color: #e2e8f0;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input:focus { border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20,184,166,.15); }
+    .form-input::placeholder { color: #475569; }
+    .form-input option { background: #1e293b; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: #64748b; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+
+    /* ─── Buttons ─── */
+    .btn-teal {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #14b8a6, #0891b2);
+      color: #fff; font-weight: 600; font-size: 14px;
+      padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    .btn-teal:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-teal:active { transform: translateY(0); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.05); color: #94a3b8;
+      font-size: 13px; font-weight: 500;
+      padding: 8px 14px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08); cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,.1); color: #e2e8f0; }
+    .btn-danger {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(239,68,68,.1); color: #f87171;
+      font-size: 12px; font-weight: 500;
+      padding: 6px 12px; border-radius: 6px;
+      border: 1px solid rgba(239,68,68,.2); cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-danger:hover { background: rgba(239,68,68,.2); }
+
+    /* ─── Status badges ─── */
+    .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: .04em; }
+    .badge-open    { background: rgba(239,68,68,.15);  color: #f87171; }
+    .badge-progress{ background: rgba(251,191,36,.15); color: #fbbf24; }
+    .badge-resolved{ background: rgba(34,197,94,.15);  color: #4ade80; }
+    .badge-closed  { background: rgba(100,116,139,.15);color: #94a3b8; }
+    .badge-high    { background: rgba(239,68,68,.12);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+    .badge-normal  { background: rgba(100,116,139,.12);color: #94a3b8; border: 1px solid rgba(100,116,139,.2); }
+    .badge-urgent  { background: rgba(251,191,36,.12); color: #fbbf24; border: 1px solid rgba(251,191,36,.2); }
+
+    /* ─── Priority dot ─── */
+    .priority-high   { color: #f87171; }
+    .priority-urgent { color: #fbbf24; }
+    .priority-normal { color: #94a3b8; }
+
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      transform: translateY(80px); opacity: 0;
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
+      max-width: 340px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-success { background: rgba(20,184,166,.15); border: 1px solid rgba(20,184,166,.3); color: #2dd4bf; }
+    .toast-error   { background: rgba(239,68,68,.15);  border: 1px solid rgba(239,68,68,.3);  color: #f87171; }
+
+    /* ─── Spinner ─── */
+    .spinner {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid rgba(45,212,191,.2);
+      border-top-color: #2dd4bf;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Scrollbar ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    /* ─── Fade in ─── */
+    .fade-in { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    /* ─── Modal ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #1e293b; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px; padding: 28px; width: 100%; max-width: 540px;
+      max-height: 90vh; overflow-y: auto;
+    }
+
+    /* ─── Table ─── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { font-size: 11px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: .08em; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.06); text-align: left; }
+    .data-table td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.04); font-size: 13px; vertical-align: top; }
+    .data-table tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* ─── Calendar date picker highlight ─── */
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════════ -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+
+  <!-- Background ambient blobs -->
+  <div class="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-10" style="background:radial-gradient(circle, #14b8a6, transparent 70%); filter:blur(60px);"></div>
+  <div class="absolute bottom-0 right-1/4 w-80 h-80 rounded-full opacity-8" style="background:radial-gradient(circle, #8b5cf6, transparent 70%); filter:blur(60px);"></div>
+
+  <div class="glass rounded-2xl p-10 w-full max-w-md fade-in relative z-10">
+    <!-- Logo / Branding -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl grad-teal mb-4 shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l9-4 9 4M3 6v14l9 4 9-4V6M3 6l9 4 9-4M12 10v10"/>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-white">Nagarsevak Portal</h1>
+      <p class="text-sm text-slate-400 mt-1">Pune Municipal Corporation · Restricted Access</p>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="space-y-5">
+      <div>
+        <label class="form-label">Username</label>
+        <input id="login-user" type="text" class="form-input" placeholder="Enter username" autocomplete="username" required />
+      </div>
+      <div>
+        <label class="form-label">Password</label>
+        <input id="login-pass" type="password" class="form-input" placeholder="Enter password" autocomplete="current-password" required />
+      </div>
+      <div id="login-error" class="hidden text-red-400 text-sm bg-red-400/10 border border-red-400/20 rounded-lg px-4 py-3"></div>
+      <button type="submit" id="login-btn" class="btn-teal w-full justify-center py-3 text-base">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        Sign In Securely
+      </button>
+    </form>
+
+    <p class="text-center text-xs text-slate-600 mt-6">Session expires after 8 hours · All activity is logged</p>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     MAIN APP (hidden until logged in)
+════════════════════════════════════════════ -->
+<div id="app" class="hidden min-h-screen flex">
+
+  <!-- ── Sidebar ── -->
+  <aside class="w-60 shrink-0 glass border-r border-white/5 flex flex-col fixed top-0 left-0 bottom-0 z-50" style="background:rgba(10,15,30,0.8);">
+
+    <!-- Brand -->
+    <div class="p-6 border-b border-white/5">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl grad-teal flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l9-4 9 4M3 6v14l9 4 9-4V6"/></svg>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-white">Nagarsevak</div>
+          <div class="text-xs text-slate-500">PMC Dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+      <div class="text-xs font-semibold text-slate-600 uppercase tracking-widest px-2 mb-3">Main</div>
+      <div class="sidebar-link active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="sidebar-link" onclick="showPage('schedule')" id="nav-schedule">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Daily Schedule
+      </div>
+      <div class="sidebar-link" onclick="showPage('grievances')" id="nav-grievances">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Grievance Tracker
+      </div>
+    </nav>
+
+    <!-- Footer -->
+    <div class="p-4 border-t border-white/5">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full grad-teal flex items-center justify-center text-xs font-bold text-white" id="sidebar-avatar">AD</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium text-slate-300 truncate" id="sidebar-username">Admin</div>
+          <div class="text-xs text-slate-600">Authenticated</div>
+        </div>
+      </div>
+      <button onclick="logout()" class="btn-ghost w-full justify-center text-xs">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── Main content area ── -->
+  <main class="ml-60 flex-1 flex flex-col min-h-screen">
+
+    <!-- Top bar -->
+    <header class="sticky top-0 z-40 glass border-b border-white/5 px-8 py-4 flex items-center justify-between">
+      <div>
+        <h1 id="page-title" class="text-lg font-bold text-white">Overview</h1>
+        <p class="text-xs text-slate-500 mt-0.5" id="page-subtitle">Welcome back</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="text-right">
+          <div class="text-xs text-slate-500" id="clock-date">—</div>
+          <div class="text-sm font-mono font-semibold text-teal-400" id="clock-time">—</div>
+        </div>
+        <div class="w-px h-8 bg-white/10"></div>
+        <div class="text-xs text-slate-400 bg-slate-800/60 px-3 py-1.5 rounded-full border border-white/5">PMC · Pune</div>
+      </div>
+    </header>
+
+    <!-- Page containers -->
+    <div class="flex-1 p-8">
+
+      <!-- ══ DASHBOARD PAGE ══ -->
+      <div id="page-dashboard" class="fade-in">
+        <!-- Stats cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <div class="glass rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Today's Meetings</span>
+              <div class="w-8 h-8 rounded-lg grad-teal flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-bold text-white font-mono" id="stat-today-meetings">—</div>
+            <div class="text-xs text-slate-500 mt-1">Scheduled today</div>
+          </div>
+          <div class="glass rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Open Cases</span>
+              <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-bold text-red-400 font-mono" id="stat-open">—</div>
+            <div class="text-xs text-slate-500 mt-1">Need attention</div>
+          </div>
+          <div class="glass rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">In Progress</span>
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-bold text-amber-400 font-mono" id="stat-inprogress">—</div>
+            <div class="text-xs text-slate-500 mt-1">Being handled</div>
+          </div>
+          <div class="glass rounded-2xl p-5">
+            <div class="flex items-start justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-widest text-slate-500">Resolved</span>
+              <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+            </div>
+            <div class="text-3xl font-bold text-green-400 font-mono" id="stat-resolved">—</div>
+            <div class="text-xs text-slate-500 mt-1">Closed successfully</div>
+          </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="glass rounded-2xl p-6">
+            <h2 class="font-semibold text-white mb-4 flex items-center gap-2">
+              <svg class="w-4 h-4 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Quick Actions
+            </h2>
+            <div class="space-y-3">
+              <button onclick="showPage('schedule'); setTimeout(openAddMeeting, 100)" class="w-full btn-ghost text-left px-4 py-3 rounded-xl justify-start">
+                <svg class="w-4 h-4 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+                Add Today's Meeting
+              </button>
+              <button onclick="showPage('grievances'); setTimeout(openAddGrievance, 100)" class="w-full btn-ghost text-left px-4 py-3 rounded-xl justify-start">
+                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+                Log New Grievance
+              </button>
+              <button onclick="showPage('grievances')" class="w-full btn-ghost text-left px-4 py-3 rounded-xl justify-start">
+                <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                View Open Grievances
+              </button>
+            </div>
+          </div>
+          <div class="glass rounded-2xl p-6">
+            <h2 class="font-semibold text-white mb-4 flex items-center gap-2">
+              <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              Today's Schedule
+            </h2>
+            <div id="dash-today-schedule" class="space-y-2">
+              <div class="text-slate-500 text-sm">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SCHEDULE PAGE ══ -->
+      <div id="page-schedule" class="hidden fade-in">
+        <!-- Date picker + Add button -->
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <div class="flex items-center gap-3 glass rounded-xl px-4 py-2.5 flex-1 min-w-[200px]">
+            <svg class="w-4 h-4 text-teal-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <input type="date" id="schedule-date" class="bg-transparent text-sm text-white outline-none flex-1" />
+          </div>
+          <button onclick="openAddMeeting()" class="btn-teal">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+            Add Meeting
+          </button>
+        </div>
+
+        <!-- Meetings list -->
+        <div id="schedule-list" class="space-y-3">
+          <div class="glass rounded-2xl p-8 text-center">
+            <div class="spinner mx-auto mb-3"></div>
+            <div class="text-slate-400 text-sm">Loading schedule…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ GRIEVANCES PAGE ══ -->
+      <div id="page-grievances" class="hidden fade-in">
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center gap-3 mb-6">
+          <div class="flex items-center gap-2 glass rounded-xl px-4 py-2.5 flex-1 min-w-[220px]">
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input id="grv-search" type="text" placeholder="Search name, ID, ward, issue…" class="bg-transparent text-sm text-white outline-none flex-1 placeholder-slate-600" oninput="filterGrievances()" />
+          </div>
+          <select id="grv-status-filter" class="form-input w-auto text-sm py-2.5" onchange="filterGrievances()">
+            <option value="">All Statuses</option>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+            <option value="Closed">Closed</option>
+          </select>
+          <button onclick="openAddGrievance()" class="btn-teal">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-7-7h14"/></svg>
+            Log Grievance
+          </button>
+        </div>
+
+        <!-- Summary chips -->
+        <div class="flex gap-2 mb-5 flex-wrap" id="grv-chips"></div>
+
+        <!-- Table -->
+        <div class="glass rounded-2xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Citizen</th>
+                  <th>Category</th>
+                  <th>Ward</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Follow-up</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="grievances-tbody">
+                <tr><td colspan="9" class="text-center py-8 text-slate-500">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="px-6 py-3 border-t border-white/5 text-xs text-slate-500" id="grv-count">—</div>
+        </div>
+      </div>
+
+    </div><!-- /p-8 -->
+  </main>
+</div><!-- /app -->
+
+
+<!-- ════════════════ MODALS ════════════════ -->
+
+<!-- Add Meeting Modal -->
+<div id="modal-add-meeting" class="modal-overlay hidden">
+  <div class="modal-box fade-in">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-lg font-bold text-white">Add Meeting</h2>
+      <button onclick="closeModal('modal-add-meeting')" class="text-slate-500 hover:text-white">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="form-add-meeting" class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Date *</label>
+          <input id="mtg-date" type="date" class="form-input" required />
+        </div>
+        <div>
+          <label class="form-label">Time *</label>
+          <input id="mtg-time" type="time" class="form-input" required />
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Title / Purpose *</label>
+        <input id="mtg-title" type="text" class="form-input" placeholder="e.g. Ward meeting with residents" required />
+      </div>
+      <div>
+        <label class="form-label">Location</label>
+        <input id="mtg-location" type="text" class="form-input" placeholder="e.g. PMC Office, Ward 12" />
+      </div>
+      <div>
+        <label class="form-label">Priority</label>
+        <select id="mtg-priority" class="form-input">
+          <option value="Normal">Normal</option>
+          <option value="High">High</option>
+          <option value="Urgent">Urgent</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Notes</label>
+        <textarea id="mtg-notes" class="form-input" rows="3" placeholder="Additional notes or agenda items…"></textarea>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-teal flex-1 justify-center">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          Save Meeting
+        </button>
+        <button type="button" onclick="closeModal('modal-add-meeting')" class="btn-ghost">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Grievance Modal -->
+<div id="modal-add-grievance" class="modal-overlay hidden">
+  <div class="modal-box fade-in">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-lg font-bold text-white">Log New Grievance</h2>
+      <button onclick="closeModal('modal-add-grievance')" class="text-slate-500 hover:text-white">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="form-add-grievance" class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Citizen Name *</label>
+          <input id="grv-name" type="text" class="form-input" placeholder="Full name" required />
+        </div>
+        <div>
+          <label class="form-label">Phone</label>
+          <input id="grv-phone" type="tel" class="form-input" placeholder="+91 XXXXX XXXXX" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Ward / Area</label>
+          <input id="grv-ward" type="text" class="form-input" placeholder="e.g. Ward 15, Kothrud" />
+        </div>
+        <div>
+          <label class="form-label">Category</label>
+          <select id="grv-category" class="form-input">
+            <option value="Road">Road / Infrastructure</option>
+            <option value="Water">Water Supply</option>
+            <option value="Drainage">Drainage / Sewage</option>
+            <option value="Garbage">Garbage Collection</option>
+            <option value="Electricity">Street Lighting</option>
+            <option value="Property">Property / Tax</option>
+            <option value="Health">Health / Sanitation</option>
+            <option value="Encroachment">Encroachment</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Description *</label>
+        <textarea id="grv-desc" class="form-input" rows="3" placeholder="Describe the issue clearly…" required></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">Priority</label>
+          <select id="grv-priority" class="form-input">
+            <option value="Normal">Normal</option>
+            <option value="High">High</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Follow-up Date</label>
+          <input id="grv-followup" type="date" class="form-input" />
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Assigned To</label>
+        <input id="grv-assigned" type="text" class="form-input" placeholder="e.g. PMC Engineer, Ward Officer" />
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-teal flex-1 justify-center">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          Log Grievance
+        </button>
+        <button type="button" onclick="closeModal('modal-add-grievance')" class="btn-ghost">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Update Grievance Modal -->
+<div id="modal-update-grievance" class="modal-overlay hidden">
+  <div class="modal-box fade-in">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-lg font-bold text-white">Update Grievance</h2>
+        <p class="text-xs text-slate-500 mt-0.5" id="update-grv-id">—</p>
+      </div>
+      <button onclick="closeModal('modal-update-grievance')" class="text-slate-500 hover:text-white">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <form id="form-update-grievance" class="space-y-4">
+      <input type="hidden" id="update-row" />
+      <div>
+        <label class="form-label">Status</label>
+        <select id="update-status" class="form-input">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Assigned To</label>
+        <input id="update-assigned" type="text" class="form-input" placeholder="PMC department or officer" />
+      </div>
+      <div>
+        <label class="form-label">Follow-up Date</label>
+        <input id="update-followup" type="date" class="form-input" />
+      </div>
+      <div>
+        <label class="form-label">Internal Notes</label>
+        <textarea id="update-notes" class="form-input" rows="3" placeholder="Actions taken, next steps…"></textarea>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-teal flex-1 justify-center">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          Save Update
+        </button>
+        <button type="button" onclick="closeModal('modal-update-grievance')" class="btn-ghost">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+// ─── Config ───────────────────────────────────────────────────────────────
+const API = ''; // empty = same origin (works on Vercel)
+
+// ─── State ────────────────────────────────────────────────────────────────
+let token = sessionStorage.getItem('nag_token') || '';
+let allGrievances = []; // cached for client-side filter
+
+// ─── Utility: fetch with auth ──────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const resp = await fetch(API + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...(opts.headers || {}),
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (resp.status === 401) { logout(); return null; }
+  return resp.json();
+}
+
+// ─── Toast ────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = '';
+  el.className = `toast toast-${type}`;
+  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  icon.setAttribute('class', 'w-5 h-5 shrink-0');
+  icon.setAttribute('fill', 'none');
+  icon.setAttribute('viewBox', '0 0 24 24');
+  icon.setAttribute('stroke', 'currentColor');
+  icon.setAttribute('stroke-width', '2');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('stroke-linecap', 'round');
+  path.setAttribute('stroke-linejoin', 'round');
+  path.setAttribute('d', type === 'success' ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z');
+  icon.appendChild(path);
+  el.appendChild(icon);
+  el.appendChild(document.createTextNode(msg));
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// ─── Clock ────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock-time').textContent =
+    now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  document.getElementById('clock-date').textContent =
+    now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── Modal helpers ────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+});
+
+// ─── Page navigation ──────────────────────────────────────────────────────
+const pageTitles = {
+  dashboard:  ['Overview', 'Welcome back — here\'s your day at a glance'],
+  schedule:   ['Daily Schedule', 'View and manage your meetings'],
+  grievances: ['Grievance Tracker', 'Log and track citizen issues'],
+};
+
+function showPage(page) {
+  ['dashboard','schedule','grievances'].forEach(p => {
+    document.getElementById(`page-${p}`).classList.toggle('hidden', p !== page);
+    const nav = document.getElementById(`nav-${p}`);
+    nav.classList.toggle('active', p === page);
+  });
+  const [title, sub] = pageTitles[page];
+  document.getElementById('page-title').textContent = title;
+  document.getElementById('page-subtitle').textContent = sub;
+
+  if (page === 'schedule') loadSchedule();
+  if (page === 'grievances') loadGrievances();
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Authenticating…';
+
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+
+    token = data.token;
+    sessionStorage.setItem('nag_token', token);
+    document.getElementById('sidebar-username').textContent = data.username;
+    document.getElementById('sidebar-avatar').textContent = data.username.slice(0,2).toUpperCase();
+    showApp();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg> Sign In Securely`;
+  }
+});
+
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  loadDashboard();
+}
+
+function logout() {
+  token = '';
+  sessionStorage.removeItem('nag_token');
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-pass').value = '';
+}
+
+// Auto-login if token in session
+if (token) showApp();
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const stats = await api('/api/stats');
+  if (!stats) return;
+  document.getElementById('stat-today-meetings').textContent = stats.todayMeetings;
+  document.getElementById('stat-open').textContent          = stats.openGrievances;
+  document.getElementById('stat-inprogress').textContent    = stats.inProgress;
+  document.getElementById('stat-resolved').textContent      = stats.resolved;
+
+  // Load today's meetings preview
+  const today = new Date().toISOString().split('T')[0];
+  const sched = await api(`/api/schedule?date=${today}`);
+  const container = document.getElementById('dash-today-schedule');
+  if (!sched || !sched.meetings.length) {
+    container.innerHTML = '<p class="text-slate-500 text-sm">No meetings scheduled today.</p>';
+    return;
+  }
+  container.innerHTML = sched.meetings.slice(0,4).map(m => `
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-white/3 border border-white/5">
+      <div class="text-xs font-mono text-teal-400 font-semibold shrink-0 mt-0.5 w-12">${m.time}</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-medium text-slate-200 truncate">${escHtml(m.title)}</div>
+        ${m.location ? `<div class="text-xs text-slate-500 mt-0.5">${escHtml(m.location)}</div>` : ''}
+      </div>
+      <span class="badge ${priorityBadge(m.priority)} shrink-0">${m.priority}</span>
+    </div>
+  `).join('');
+}
+
+// ─── SCHEDULE ─────────────────────────────────────────────────────────────
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+async function loadSchedule() {
+  const dateEl = document.getElementById('schedule-date');
+  if (!dateEl.value) dateEl.value = todayStr();
+  const date = dateEl.value;
+
+  document.getElementById('schedule-list').innerHTML = `
+    <div class="glass rounded-2xl p-8 text-center">
+      <div class="spinner mx-auto mb-3"></div>
+      <div class="text-slate-400 text-sm">Loading…</div>
+    </div>`;
+
+  const data = await api(`/api/schedule?date=${date}`);
+  renderSchedule(data?.meetings || []);
+}
+
+document.getElementById('schedule-date').addEventListener('change', loadSchedule);
+
+function renderSchedule(meetings) {
+  const container = document.getElementById('schedule-list');
+  if (!meetings.length) {
+    container.innerHTML = `
+      <div class="glass rounded-2xl p-12 text-center">
+        <svg class="w-12 h-12 text-slate-700 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <div class="text-slate-400 font-medium mb-1">No meetings</div>
+        <div class="text-slate-600 text-sm">Click "Add Meeting" to schedule one</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = meetings.map(m => `
+    <div class="glass rounded-2xl p-5 flex items-start gap-4 group hover:border-teal-500/20 transition-all">
+      <div class="shrink-0 text-center min-w-[56px]">
+        <div class="text-lg font-mono font-bold text-teal-400">${m.time}</div>
+        <div class="text-xs text-slate-600 mt-0.5">${formatTime12(m.time)}</div>
+      </div>
+      <div class="w-px self-stretch bg-teal-500/20 shrink-0"></div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <h3 class="font-semibold text-white">${escHtml(m.title)}</h3>
+            ${m.location ? `<div class="text-sm text-slate-400 mt-0.5 flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>${escHtml(m.location)}</div>` : ''}
+            ${m.notes ? `<div class="text-xs text-slate-500 mt-2 bg-white/3 rounded-lg px-3 py-2">${escHtml(m.notes)}</div>` : ''}
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="badge ${priorityBadge(m.priority)}">${m.priority}</span>
+            <button onclick="deleteMeeting(${m.sheetRow})" class="btn-danger opacity-0 group-hover:opacity-100 transition-opacity">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openAddMeeting() {
+  document.getElementById('mtg-date').value = document.getElementById('schedule-date').value || todayStr();
+  document.getElementById('mtg-time').value = '';
+  document.getElementById('mtg-title').value = '';
+  document.getElementById('mtg-location').value = '';
+  document.getElementById('mtg-notes').value = '';
+  document.getElementById('mtg-priority').value = 'Normal';
+  openModal('modal-add-meeting');
+  setTimeout(() => document.getElementById('mtg-time').focus(), 100);
+}
+
+document.getElementById('form-add-meeting').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('[type=submit]');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Saving…';
+
+  const data = await api('/api/schedule', {
+    method: 'POST',
+    body: {
+      date:     document.getElementById('mtg-date').value,
+      time:     document.getElementById('mtg-time').value,
+      title:    document.getElementById('mtg-title').value,
+      location: document.getElementById('mtg-location').value,
+      notes:    document.getElementById('mtg-notes').value,
+      priority: document.getElementById('mtg-priority').value,
+    },
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Save Meeting';
+
+  if (data?.success) {
+    closeModal('modal-add-meeting');
+    showToast('Meeting added successfully!');
+    loadSchedule();
+    loadDashboard();
+  } else {
+    showToast(data?.error || 'Failed to add meeting', 'error');
+  }
+});
+
+async function deleteMeeting(row) {
+  if (!confirm('Delete this meeting?')) return;
+  const data = await api(`/api/schedule?row=${row}`, { method: 'DELETE' });
+  if (data?.success) { showToast('Meeting deleted'); loadSchedule(); loadDashboard(); }
+  else showToast(data?.error || 'Failed to delete', 'error');
+}
+
+// ─── GRIEVANCES ───────────────────────────────────────────────────────────
+async function loadGrievances() {
+  document.getElementById('grievances-tbody').innerHTML =
+    '<tr><td colspan="9" class="text-center py-8"><div class="spinner mx-auto"></div></td></tr>';
+
+  const data = await api('/api/grievances');
+  allGrievances = data?.grievances || [];
+  renderGrievanceChips();
+  filterGrievances();
+}
+
+function renderGrievanceChips() {
+  const counts = { Open: 0, 'In Progress': 0, Resolved: 0, Closed: 0 };
+  allGrievances.forEach(g => { if (counts[g.status] !== undefined) counts[g.status]++; });
+  document.getElementById('grv-chips').innerHTML = Object.entries(counts).map(([status, count]) => `
+    <button onclick="document.getElementById('grv-status-filter').value='${status}'; filterGrievances()"
+      class="badge ${statusBadge(status)} cursor-pointer hover:opacity-80 transition-opacity text-xs px-3 py-1.5">
+      ${status}: ${count}
+    </button>
+  `).join('');
+}
+
+function filterGrievances() {
+  const search  = document.getElementById('grv-search').value.toLowerCase();
+  const status  = document.getElementById('grv-status-filter').value;
+
+  let filtered = allGrievances.filter(g => {
+    const matchStatus = !status || g.status === status;
+    const matchSearch = !search || [g.citizenName, g.id, g.ward, g.category, g.description, g.assignedTo]
+      .some(f => f.toLowerCase().includes(search));
+    return matchStatus && matchSearch;
+  });
+
+  renderGrievancesTable(filtered);
+  document.getElementById('grv-count').textContent =
+    `Showing ${filtered.length} of ${allGrievances.length} grievances`;
+}
+
+function renderGrievancesTable(grievances) {
+  const tbody = document.getElementById('grievances-tbody');
+  if (!grievances.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="text-center py-12 text-slate-500">No grievances found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = grievances.map(g => `
+    <tr>
+      <td><span class="font-mono text-xs text-teal-400">${escHtml(g.id)}</span><div class="text-xs text-slate-600 mt-0.5">${g.date}</div></td>
+      <td>
+        <div class="font-medium text-slate-200">${escHtml(g.citizenName)}</div>
+        ${g.phone ? `<div class="text-xs text-slate-500 mt-0.5">${escHtml(g.phone)}</div>` : ''}
+      </td>
+      <td><span class="text-xs bg-slate-700/60 text-slate-300 px-2 py-1 rounded-md">${escHtml(g.category)}</span></td>
+      <td class="text-slate-400 text-xs">${escHtml(g.ward)}</td>
+      <td class="max-w-[200px]">
+        <div class="text-sm text-slate-300 line-clamp-2">${escHtml(g.description)}</div>
+        ${g.notes ? `<div class="text-xs text-slate-600 mt-1 italic line-clamp-1">${escHtml(g.notes)}</div>` : ''}
+      </td>
+      <td><span class="badge ${statusBadge(g.status)}">${g.status}</span></td>
+      <td><span class="badge ${priorityBadge(g.priority)}">${g.priority}</span></td>
+      <td class="text-xs text-slate-500">${g.followUpDate || '—'}${g.assignedTo ? `<div class="text-slate-600 mt-0.5">${escHtml(g.assignedTo)}</div>` : ''}</td>
+      <td>
+        <button onclick='openUpdateGrievance(${JSON.stringify(g)})' class="btn-ghost text-xs px-3 py-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          Update
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openAddGrievance() {
+  ['grv-name','grv-phone','grv-ward','grv-desc','grv-assigned'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('grv-category').value = 'General';
+  document.getElementById('grv-priority').value = 'Normal';
+  document.getElementById('grv-followup').value = '';
+  openModal('modal-add-grievance');
+  setTimeout(() => document.getElementById('grv-name').focus(), 100);
+}
+
+document.getElementById('form-add-grievance').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('[type=submit]');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Logging…';
+
+  const data = await api('/api/grievances', {
+    method: 'POST',
+    body: {
+      citizenName:  document.getElementById('grv-name').value,
+      phone:        document.getElementById('grv-phone').value,
+      ward:         document.getElementById('grv-ward').value,
+      category:     document.getElementById('grv-category').value,
+      description:  document.getElementById('grv-desc').value,
+      priority:     document.getElementById('grv-priority').value,
+      followUpDate: document.getElementById('grv-followup').value,
+      assignedTo:   document.getElementById('grv-assigned').value,
+    },
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Log Grievance';
+
+  if (data?.success) {
+    closeModal('modal-add-grievance');
+    showToast(`Grievance ${data.id} logged successfully!`);
+    loadGrievances();
+    loadDashboard();
+  } else {
+    showToast(data?.error || 'Failed to log grievance', 'error');
+  }
+});
+
+function openUpdateGrievance(g) {
+  document.getElementById('update-row').value      = g.sheetRow;
+  document.getElementById('update-grv-id').textContent = `${g.id} · ${g.citizenName}`;
+  document.getElementById('update-status').value   = g.status;
+  document.getElementById('update-notes').value    = g.notes;
+  document.getElementById('update-followup').value = g.followUpDate;
+  document.getElementById('update-assigned').value = g.assignedTo;
+  openModal('modal-update-grievance');
+}
+
+document.getElementById('form-update-grievance').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('[type=submit]');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Saving…';
+  const row = document.getElementById('update-row').value;
+
+  const data = await api(`/api/grievances?row=${row}`, {
+    method: 'PATCH',
+    body: {
+      status:      document.getElementById('update-status').value,
+      notes:       document.getElementById('update-notes').value,
+      followUpDate:document.getElementById('update-followup').value,
+      assignedTo:  document.getElementById('update-assigned').value,
+    },
+  });
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg> Save Update';
+
+  if (data?.success) {
+    closeModal('modal-update-grievance');
+    showToast('Grievance updated!');
+    loadGrievances();
+    loadDashboard();
+  } else {
+    showToast(data?.error || 'Failed to update', 'error');
+  }
+});
+
+// ─── Helpers ──────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function formatTime12(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+function statusBadge(s) {
+  return { 'Open':'badge-open','In Progress':'badge-progress','Resolved':'badge-resolved','Closed':'badge-closed' }[s] || 'badge-closed';
+}
+function priorityBadge(p) {
+  return { 'High':'badge-high','Urgent':'badge-urgent','Normal':'badge-normal' }[p] || 'badge-normal';
+}
+</script>
+</body>
+</html>
